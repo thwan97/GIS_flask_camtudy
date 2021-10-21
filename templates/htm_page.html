@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8  offset-lg-2">
+            <h3 class="mt-5">Live Streaming</h3>
+            <br>
+            <div>
+                preview_camera
+                <img src="{{ url_for('preview_camera_route') }}" width="30%">
+            </div>
+            <br>
+            <div>
+                htm_camera
+                <img src="{{ url_for('htm_camera_route') }}" width="30%">
+            </div>           
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+</html>
