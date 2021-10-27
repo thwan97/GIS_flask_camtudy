@@ -1,8 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends 'base/base.html' %}
 
-</head>
+{% block content %}
 
 <body>
 <div class="container">
@@ -11,13 +9,8 @@
             <h3 class="mt-5">Live Streaming</h3>
             <br>
             <div>
-                preview_camera
-                <img src="{{ url_for('preview_camera_route') }}" width="30%">
-            </div>
-            <br>
-            <div>
-                htm_camera
-                <img src="{{ url_for('htm_camera_route') }}" width="30%">
+                <img src="{{ url_for('htm_camera_route') }}" width="70%">
+                <br>
             </div>           
         </div>
     </div>
@@ -25,5 +18,4 @@
 
 </body>
 
-
-</html>
+{% endblock %}

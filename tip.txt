@@ -1,0 +1,11 @@
+
+ㅁ 윈도우에서 디버그모드로 flask 켜기
+set FLASK_ENV=development
+
+ㅁ Vscode 확장팩 code runner 끄기
+CTRL + ALT + M(윈도우 기준)
+
+ㅁ flask routing 부분들
+- render_template : templates 폴더 안에 있는 html파일을 부름
+- redirect : 실제 url같은 ex) 'www.naver.com' 으로 이동
+- Response(preview_camera(), mimetype='multipart/x-mixed-replace; boundary=frame') : 함수? 를 불러옴?
