@@ -195,8 +195,8 @@ def htm_camera():
                     print("입에 손가락")
                     count_hand_lip += 1
                     cv2img = 10
-            print(timestamp)
-            print(count_blink)
+            # print(timestamp)
+            # print(count_blink)
             if timestamp == 1:
                 pre_count_blink = count_blink
             if timestamp > 100:
