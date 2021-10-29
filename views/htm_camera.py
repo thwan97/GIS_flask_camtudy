@@ -221,20 +221,20 @@ def htm_camera():
             #캠 + 정보이미지 출력
             h, w, c = img.shape
             img2 = np.zeros((h,w,3), np.uint8)
-            chilimg = cv2.imread('./views/chil.jpg')
+            chilimg = cv2.imread('./static/htm_camera/chil.jpg')
             chilimg = cv2.resize(chilimg, dsize=(w,h))
             h3, w3, _ = chilimg.shape
             img2[0:h, 0:w] = chilimg
             if cv2img != 0:
-                stopimg = cv2.imread('./views/stop.jpg')
+                stopimg = cv2.imread('./static/htm_camera/stop.jpg')
                 stopimg = cv2.resize(stopimg, dsize=(int(w*0.9), int(h*0.7)))
                 img2[int(h*0.05):int(h*0.75), int(w*0.05):int(w*0.95)] = stopimg 
                 cv2img -= 1
             
             # img2 = np.zeros((200,400,3),np.uint8)
-            fontpath = "./views/Maplestory Light.ttf"
+            fontpath = "./static/htm_camera/Maplestory Light.ttf"
             font = ImageFont.truetype(fontpath, 20)
-            font2 = ImageFont.truetype('./views/Maplestory Bold.ttf', 72)
+            font2 = ImageFont.truetype('./static/htm_camera/Maplestory Bold.ttf', 72)
             img_pil = Image.fromarray(img2)
             draw = ImageDraw.Draw(img_pil)
 
