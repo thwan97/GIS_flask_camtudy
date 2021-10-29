@@ -169,8 +169,7 @@ def htm_camera():
                 # print(dist_3[0])
             timestamp += 1
 
-
-                
+ 
             if first > 1:
                 if (height - fis_height + width - fis_width) > 50: ## 첫 화면 얼굴 크기보다 나중 화면 얼굴 크기가 일정 값 이상 커질때
                     count_front += 1
@@ -242,7 +241,7 @@ def htm_camera():
                 draw.text((100,int(h*0.40)), "고개좀 뒤로해", font=font2, fill=(255,255,255))
                 cv2img_front -= 1
 
-            if cv2img_back != 0:
+            if cv2img_back != 0 and cv2img_front == 0:
                 draw.text((100,int(h*0.40)), "허리좀 펴", font=font2, fill=(255,255,255))
                 cv2img_back -= 1
 
