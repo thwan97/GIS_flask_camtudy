@@ -43,22 +43,22 @@ def htm_camera():
         y = abs(face_landmarks.part(val1).y - lmList[val2][2])
         return (x ** 2 + y ** 2) ** (1/2)
 
-    def angle(a, b):
-        x = a.x - b.x
-        y = a.y - b.y
-        radian = math.atan2(y, x)
-        degree = radian * 180 / 3
-        return degree
-
     count = 0
-    count2 = 0
-    count3 = 0
-    count4 = 0
-    total = 0
     first = 0
     height = -1
     width = -1
     face_landmarks = 0
+
+    count_front = 0
+    count_back = 0
+    count_hand_lip = 0
+    count_hand_eye = 0
+    count_hand_chin = 0
+    count_blink = 0
+    count_manse = 0
+    count_not_blink = 0
+    timestamp = 0
+
 
     while True:
         success,img = cap.read()
@@ -82,9 +82,7 @@ def htm_camera():
                 left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value]
 
                 if right_wrist.y < right_eye.y and left_wrist.y < left_eye.y and abs(right_elbow.x - right_shoulder.x) < 0.1 and abs(right_wrist.x - right_elbow.x) < 0.1 and abs(left_elbow.x - left_shoulder.x) < 0.1 and abs(left_wrist.x - left_elbow.x) < 0.1 :
-                    # print('만세!!')
-                    movement = '만세'
-                    print(movement)
+                    count_manse += 1
                     
      
             except:
@@ -108,7 +106,7 @@ def htm_camera():
                     count+=1
                 else:
                     if count>=3:
-                        total+=1
+                        count_blink+=1
 
                     count=0
                 if first == 0:
@@ -136,24 +134,20 @@ def htm_camera():
             if len(lmList) != 0 and face_landmarks != 0:
                 # 새끼손가락 얼굴안 & 손 키포인트각들의 합
                 if lmList[20][1] > face_landmarks.part(1).x and lmList[20][1] < face_landmarks.part(15).x and degree2 > 100 and degree2 < 300:
-                    count2 += 1
-                    if count2 == 50:
-                        movement = '손 얼굴안'
-                        print(movement)
-                        # print("손 얼굴안")
-                        count2 = 0
+                    count_hand_chin += 1
+                    if count_hand_chin == 50:
+                        print("손 얼굴안")
+                        count_hand_chin = 0
                 else:
-                    count2 = 0        
+                    count_hand_chin = 0      
                 
                 dist_1 = dist_face_finger(lmList, face_landmarks, 40, 8) #왼쪽눈 검지 거리
                 dist_2 = dist_face_finger(lmList, face_landmarks, 47, 8) #오른쪽눈 검지 거리
                 if dist_1 < 15 or dist_2 < 15:
-                    count3 += 1
-                    if count3 == 30:
-                        print("눈비빔")
-                        count3 = 0
+                    count_hand_eye += 1
                 else:
-                    count3 = 0
+                    count_hand_eye = 0
+
 
                 # 입에 손가락    
                 dist_3 = []
@@ -161,25 +155,48 @@ def htm_camera():
                     dist_3.append(dist_face_finger(lmList, face_landmarks, 66, num))
 
                 if ((dist_3[0] < 20 or dist_3[1] < 20 or dist_3[2] < 20 or dist_3[3] < 20) and degree2 > 400 and degree2 < 900):
-                    count4 += 1
-                    if count4 == 40:
-                        print("입에 손가락")
-                        count4 = 0
+                    count_hand_lip += 1
                 else:
-                    count4 = 0
+                    count_hand_lip = 0
                 # print(dist_3[0])
+            timestamp += 1
 
 
                 
             if first > 1:
                 if (height - fis_height + width - fis_width) > 50: ## 첫 화면 얼굴 크기보다 나중 화면 얼굴 크기가 일정 값 이상 커질때
+                    count_front += 1
                     cv2.putText(img, "go back!", (100, 100),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)    
                 if(eyebrow_y - fis_eyebrow_y) > 50: ## 첫 화면 눈썹 y좌표보다 나중 화면 눈썹y좌표가 일정 값 이상 커질 때
+                    count_back += 1
                     cv2.putText(img, "stretch your back!", (100, 100),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)  
-            cv2.putText(img, "Blink Count: {}".format(total), (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            cv2.putText(img, "Blink Count: {}".format(count_blink), (10, 30),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             # if (height > 0) and (width > 0):
             #     print(fis_height, fis_width, height, width)
             # cv2.imshow('Video',img)
+            if count_manse == 30:
+                print('만세하고 있음')
+                count_manse = 0
+
+            if count_hand_eye == 30:
+                    print("눈비빔")
+                    count_hand_eye = 0
+
+            if count_hand_lip == 40:
+                    print("입에 손가락")
+                    count_hand_lip = 0
+                    
+            if timestamp > 100:
+                timestamp = 0
+                if count_blink == 0:
+                    print('눈 안깜빡임')
+                    count_not_blink += 1
+            if cv2.waitKey(1) & 0xff==ord('q'):
+                break
+            if count_front > 30:
+                print('고개좀 뒤로해')
+            if count_back > 30:
+                print('허리좀 펴')
             if cv2.waitKey(1) & 0xff==ord('q'):
                 break
 
