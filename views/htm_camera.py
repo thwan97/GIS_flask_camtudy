@@ -62,6 +62,7 @@ def htm_camera():
     count_blink = 0
     count_manse = 0
     count_not_blink = 0
+    cv2img_eye_blink = 0
     timestamp = 0
 
 
@@ -194,12 +195,16 @@ def htm_camera():
                     print("입에 손가락")
                     count_hand_lip += 1
                     cv2img = 10
-                    
+            print(timestamp)
+            print(count_blink)
+            if timestamp == 1:
+                pre_count_blink = count_blink
             if timestamp > 100:
                 timestamp = 0
-                if count_blink == 0:
+                if count_blink == pre_count_blink:
                     print('눈 안깜빡임')
                     count_not_blink += 1
+                    cv2img_eye_blink = 10
             if cv2.waitKey(1) & 0xff==ord('q'):
                 break
             if count_front > 30:
@@ -240,6 +245,10 @@ def htm_camera():
             if cv2img_back != 0:
                 draw.text((100,int(h*0.40)), "허리좀 펴", font=font2, fill=(255,255,255))
                 cv2img_back -= 1
+
+            if cv2img_eye_blink != 0:
+                draw.text((100,int(h*0.40)), "눈 좀 깜빡여", font=font2, fill=(255,255,255))
+                cv2img_eye_blink -= 1
 
             draw.text((100,int(h*0.90)), "입에손", font=font, fill=(255,255,255))
             draw.text((200,int(h*0.90)), "얼굴손", font=font, fill=(255,255,255))
