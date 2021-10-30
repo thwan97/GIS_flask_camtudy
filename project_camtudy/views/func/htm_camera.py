@@ -50,7 +50,9 @@ def htm_camera():
     height = -1
     width = -1
     face_landmarks = 0
-    cv2img = 0
+    cv2img_lip = 0
+    cv2img_chin = 0
+    cv2img_eye = 0
     cv2img_back = 0
     cv2img_front = 0
     count2, count3, count4 = 0, 0, 0
@@ -65,6 +67,8 @@ def htm_camera():
     cv2img_eye_blink = 0
     timestamp = 0
     timestamp2 = 0
+    count_front_cnt = 0
+    count_back_cnt = 0
 
 
     while True:
@@ -146,7 +150,7 @@ def htm_camera():
                         # print("손 얼굴안")
                         count2 = 0
                         count_hand_chin +=1
-                        cv2img = 10
+                        cv2img_chin = 10
                 else:
                     count2 = 0      
                 
@@ -173,7 +177,7 @@ def htm_camera():
 
  
             if first > 1:
-                if (height - fis_height + width - fis_width) > 50: ## 첫 화면 얼굴 크기보다 나중 화면 얼굴 크기가 일정 값 이상 커질때
+                if (height - fis_height + width - fis_width) > 60: ## 첫 화면 얼굴 크기보다 나중 화면 얼굴 크기가 일정 값 이상 커질때
                     count_front += 1
                     # cv2.putText(img, "go back!", (100, 100),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)    
                 if(eyebrow_y - fis_eyebrow_y) > 50: ## 첫 화면 눈썹 y좌표보다 나중 화면 눈썹y좌표가 일정 값 이상 커질 때
@@ -190,12 +194,12 @@ def htm_camera():
             if count3 == 30:
                     # print("눈비빔")
                     count_hand_eye += 1
-                    cv2img = 10
+                    cv2img_eye = 10
 
             if count4 == 40:
                     # print("입에 손가락")
                     count_hand_lip += 1
-                    cv2img = 10
+                    cv2img_lip = 10
             # print(timestamp)
             # print(count_blink)
             if timestamp == 1:
@@ -211,10 +215,12 @@ def htm_camera():
             if count_front > 30:
                 # print('고개좀 뒤로해')                
                 count_front = 0
+                count_front_cnt += 1
                 cv2img_front = 10
             if count_back > 30:
                 # print('허리좀 펴')
                 count_back = 0
+                count_back_cnt += 1
                 cv2img_back = 10
             if cv2.waitKey(1) & 0xff==ord('q'):
                 break
@@ -226,49 +232,64 @@ def htm_camera():
             chilimg = cv2.resize(chilimg, dsize=(w,h))
             h3, w3, _ = chilimg.shape
             img2[0:h, 0:w] = chilimg
-            if cv2img != 0:
-                stopimg = cv2.imread('project_camtudy/static/htm_camera/stop.jpg')
-                stopimg = cv2.resize(stopimg, dsize=(int(w*0.9), int(h*0.7)))
-                img2[int(h*0.05):int(h*0.75), int(w*0.05):int(w*0.95)] = stopimg 
-                cv2img -= 1
+            # if cv2img != 0:
+            #     stopimg = cv2.imread('project_camtudy/static/htm_camera/stop.jpg')
+            #     stopimg = cv2.resize(stopimg, dsize=(int(w*0.9), int(h*0.7)))
+            #     img2[int(h*0.05):int(h*0.75), int(w*0.05):int(w*0.95)] = stopimg 
+            #     cv2img -= 1
+            
             
             # img2 = np.zeros((200,400,3),np.uint8)
             fontpath = "project_camtudy/static/htm_camera/Maplestory Light.ttf"
             font = ImageFont.truetype(fontpath, 20)
             font2 = ImageFont.truetype('project_camtudy/static/htm_camera/Maplestory Bold.ttf', 72)
-            font3 = ImageFont.truetype('project_camtudy/static/htm_camera/Maplestory Bold.ttf', 50)
+            font3 = ImageFont.truetype('project_camtudy/static/htm_camera/Maplestory Bold.ttf', 72)
             img_pil = Image.fromarray(img2)
             draw = ImageDraw.Draw(img_pil)
             # print(timestamp)
+            if cv2img_lip != 0:
+                draw.text((100,int(h*0.40)), "손톱 물지마세요", font=font2, fill=(255,255,255))
+                cv2img_lip -= 1
+
+            if cv2img_chin != 0:
+                draw.text((100,int(h*0.40)), "턱 괴지마세요", font=font2, fill=(255,255,255))
+                cv2img_chin -= 1
+
+            if cv2img_eye != 0:
+                draw.text((100,int(h*0.40)), "눈 비비지마세요", font=font2, fill=(255,255,255))
+                cv2img_eye -= 1
+
             if cv2img_front != 0 and faces:
-                draw.text((100,int(h*0.40)), "고개좀 뒤로해", font=font2, fill=(255,255,255))
+                draw.text((50,int(h*0.40)), "고개좀 뒤로해주세요", font=font2, fill=(255,255,255))
                 cv2img_front -= 1
 
             if cv2img_back != 0 and cv2img_front == 0 and faces:
-                draw.text((100,int(h*0.40)), "허리좀 펴", font=font2, fill=(255,255,255))
+                draw.text((100,int(h*0.40)), "허리좀 펴주세요", font=font2, fill=(255,255,255))
                 cv2img_back -= 1
 
             if cv2img_eye_blink != 0  and faces and cv2img_back == 0:
-                draw.text((100,int(h*0.40)), "눈 좀 깜빡여", font=font2, fill=(255,255,255))
+                draw.text((100,int(h*0.40)), "눈 좀 깜빡여주세요", font=font2, fill=(255,255,255))
                 cv2img_eye_blink -= 1
             if not faces:
                 count = 0
                 count2 =0
                 count3 = 0
                 count4 = 0
+                count_back = 0
+                count_front = 0
                 timestamp2 +=1
                 if timestamp2 >= 50:
                     draw.text((100,int(h*0.40)), "자리 비움", font=font2, fill=(255,255,255))
             else:
                 timestamp2 = 0
-            draw.text((100,int(h*0.90)), "입에손", font=font, fill=(255,255,255))
-            draw.text((200,int(h*0.90)), "얼굴손", font=font, fill=(255,255,255))
-            draw.text((300,int(h*0.90)), "눈에손", font=font, fill=(255,255,255))
-            draw.text((380, int(h*0.78)), f'{100 - (count_hand_lip *0.5 + count_hand_chin * 0.5 + count_hand_eye* 0.5) } 점', font=font3,  fill=(255,255,255))
+            # draw.text((100,int(h*0.90)), "입에손", font=font, fill=(255,255,255))
+            # draw.text((200,int(h*0.90)), "얼굴손", font=font, fill=(255,255,255))
+            # draw.text((300,int(h*0.90)), "눈에손", font=font, fill=(255,255,255))
+            draw.text((int(w*0.30), int(h*0.75)), f'{100 - (count_hand_lip *0.5 + count_hand_chin * 0.5 + count_hand_eye* 0.5 + count_back_cnt * 0.5 + count_front_cnt * 0.5 + count_not_blink * 0.5) } 점', font=font3,  fill=(255,255,255))
             img2 = np.array(img_pil)
-            cv2.putText(img2, f'{count_hand_lip}', (105, int(h*0.88)),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-            cv2.putText(img2, f'{count_hand_chin}', (205, int(h*0.88)),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-            cv2.putText(img2, f'{count_hand_eye}', (305, int(h*0.88)),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+            # cv2.putText(img2, f'{count_hand_lip}', (105, int(h*0.88)),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+            # cv2.putText(img2, f'{count_hand_chin}', (205, int(h*0.88)),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+            # cv2.putText(img2, f'{count_hand_eye}', (305, int(h*0.88)),cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
             
             
             
